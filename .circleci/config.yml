@@ -69,7 +69,8 @@ jobs:
       - run:
           name: Push tag & changes to github.com
           command: |
-            git merge master staging --no-commit
+            git checkout master
+            git merge staging --no-commit
             git push -u origin master
             git push --tags
 workflows:
