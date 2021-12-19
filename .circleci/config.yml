@@ -1,0 +1,102 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.1.0
+  aws-cli: circleci/aws-cli@1.3.1
+  versatile: versatile/circleci-deployments@1.3.4
+  slack: circleci/slack@4.5.0
+
+dev-filtering: &dev-filtering
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      only: /^dev[1-2]$/
+
+staging-dev-filtering: &staging-dev-filtering
+  filters:
+    branches:
+      only: staging
+    tags:
+      only: /^dev[1-2]$/
+
+production-filtering: &production-filtering
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      only: /^v.*/
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:12.22.6-browsers
+    steps:
+      - checkout
+      - run: env
+      - run:
+          command: "npm ci --production=false"
+          name: "Install Dependencies"
+      - run: cp ./envs/$NODE_ENV.env .env
+      - run:
+          command: "npm run build"
+          name: "Build app for ${CIRCLE_TAG}"
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - build
+            - .env
+  release:
+    docker:
+      - image: cimg/node:17.1.0
+    steps:
+      - run: env
+      - run:
+          name: Add github.com to known hosts
+          command: |
+            mkdir ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+            git config --global user.email "circleci@versatile.ai"
+            git config --global user.name "circleci-workflow"
+      - run:
+          name: Checkout staging
+          command: git checkout staging
+      - run:
+          name: Versioning
+          command: |
+            LAST_COMMIT_SEMVER=$(git log --format=oneline -n 1 $CIRCLE_SHA1  | sed -n 's/.*\[\([a-z]\{1,\}\)\].*/\1/p')
+            npm version ${LAST_COMMIT_SEMVER:=minor} -m "version %s [skip ci]"
+      - run:
+          name: Push tag & changes to github.com
+          command: |
+            git merge master staging
+            git push -u origin staging
+            git push -u origin master
+            git push --tags
+workflows:
+  tag-production:
+    jobs:
+      - release:
+          filters:
+            branches:
+              only:
+                - master
+  build-and-deploy:
+    jobs:
+      - build:
+          name: build-production
+          <<: *production-filtering
+          pre-steps:
+            - run:
+                name: Add github.com to known hosts
+                command: mkdir ~/.ssh/ && ssh-keyscan github.com >> ~/.ssh/known_hosts
+            - run:
+                name: "verify production deployment"
+                command: |
+                  LATEST_MASTER_COMMIT=$(git ls-remote $CIRCLE_REPOSITORY_URL | grep master | cut -f 1)
+                  if [ "$CIRCLE_SHA1" != $LAST_MASTER_COMMIT ]; then
+                    echo "not part of master branch, exiting"
+                    curl -X POST "https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel?circle-token=$CIRCLE_TOKEN"
+                  fi
+          context:
+            - orb-publishing # tempfix: needed for cancel workflow {CIRCLE_TOKEN}
+            - base-context
+            - production
