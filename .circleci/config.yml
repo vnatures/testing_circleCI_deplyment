@@ -65,7 +65,7 @@ jobs:
           name: Fast forward master from staging
           command: |
             git checkout staging
-            git merge --only-ff master
+            git merge --ff-only master
       - run:
           name: Push tag & changes to github.com
           command: |
