@@ -69,7 +69,7 @@ jobs:
       - run:
           name: Push tag & changes to github.com
           command: |
-            git log --all --color --oneline --decorate --graph -n 15
+            git log --all --color --oneline --decorate --graph -n 10
             git push -u origin staging
             git push -u origin master
             git push --tags
