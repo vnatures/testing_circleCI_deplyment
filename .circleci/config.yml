@@ -36,7 +36,6 @@ jobs:
       - run:
           command: "npm ci --production=false"
           name: "Install Dependencies"
-      - run: cp ./envs/$NODE_ENV.env .env
       - run:
           command: "npm run build"
           name: "Build app for ${CIRCLE_TAG}"
