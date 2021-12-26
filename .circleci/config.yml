@@ -59,7 +59,7 @@ jobs:
       - run:
           name: Versioning
           command: |
-            LAST_COMMIT_SEMVER=$(git log --format=oneline -n 1 $CIRCLE_SHA1  | sed -n 's/.*\[\([a-z]\{1,\}\)\].*/\1/p')
+            LAST_COMMIT_SEMVER=$(git log --format=oneline -n 1 $CIRCLE_SHA1  | sed -n 's/.*\[\(major|minor|patch\)\].*/\1/p')
             npm version ${LAST_COMMIT_SEMVER:=minor} -m "version %s [skip ci]"
       - run:
           name: Fast forward master from staging
@@ -68,6 +68,7 @@ jobs:
       - run:
           name: Push tag & changes to github.com
           command: |
+            git log --all --color --oneline --decorate --graph -n 15
             git push -u origin staging
             git push -u origin master
             git push --tags
