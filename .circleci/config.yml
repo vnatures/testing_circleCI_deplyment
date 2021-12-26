@@ -68,10 +68,10 @@ jobs:
       - run:
           name: Push tag & changes to github.com
           command: |
-            git log --all --color --oneline --decorate --graph
             git push -u origin staging
             git push -u origin master
             git push --tags
+            git log --all --color --oneline --decorate --graph | exit 1
 
 workflows:
   tag-production:
