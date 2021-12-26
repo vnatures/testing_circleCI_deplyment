@@ -64,7 +64,8 @@ jobs:
       - run:
           name: Fast forward master from staging
           command: |
-            git rebase master staging
+            git checkout staging
+            git merge --only-ff master
       - run:
           name: Push tag & changes to github.com
           command: |
