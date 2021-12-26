@@ -73,6 +73,7 @@ jobs:
             git push -u origin staging
             git push -u origin master
             git push --tags
+
 workflows:
   tag-production:
     jobs:
