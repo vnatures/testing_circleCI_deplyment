@@ -71,7 +71,7 @@ jobs:
             git push -u origin staging
             git push -u origin master
             git push --tags
-            git log --all --color --oneline --decorate --graph | exit 1
+            git log --all --color --oneline --decorate --graph -n 15
 
 workflows:
   tag-production:
