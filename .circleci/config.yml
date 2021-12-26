@@ -93,8 +93,9 @@ workflows:
             - run:
                 name: "verify production deployment"
                 command: |
-                  LATEST_MASTER_COMMIT=$(git ls-remote $CIRCLE_REPOSITORY_URL | grep master | cut -f 1)
-                  if [ "$CIRCLE_SHA1" != $LAST_MASTER_COMMIT ]; then
+                  LATEST_MASTER_COMMIT=$(git ls-remote $CIRCLE_REPOSITORY_URL | grep '\/master$' | cut -f 1)
+                  echo $LATEST_MASTER_COMMIT
+                  if [ "$CIRCLE_SHA1" != "$LATEST_MASTER_COMMIT" ]; then
                     echo "not part of master branch, exiting"
                     curl -X POST "https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel?circle-token=$CIRCLE_TOKEN"
                   fi
