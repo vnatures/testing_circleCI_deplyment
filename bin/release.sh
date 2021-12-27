@@ -22,6 +22,6 @@ git push --tags
 # debug
 git log --all --color --oneline --decorate --graph -n 15
 
-echo 'restore state'
+echo 'restore previous state'
 git checkout -
 git stash pop # restore un/stage changes
