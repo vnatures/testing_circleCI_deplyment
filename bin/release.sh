@@ -21,6 +21,8 @@ echo "\n${cyan}validate double tag${reset}"
 CURRENT_TAG=$(git tag --points-at HEAD)
 if [ -n "$CURRENT_TAG" ]; then
   echo "${red}Can't tag this commit again. Commit already tagged with ${CURRENT_TAG}."
+  cd ..
+  rm -rf temp_repo
   exit 1
 fi
 
@@ -39,7 +41,7 @@ git push origin tag v$TAGGED_VERSION
 
 git log --all --color --oneline --decorate --graph -n 20
 
-echo "\n${cyan}clean temp repo"
+echo "\n${cyan}clean temp repo${reset}"
 cd ..
 rm -rf temp_repo
 git fetch origin master:master
