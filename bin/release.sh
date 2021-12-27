@@ -4,21 +4,22 @@ export cyan="\033[1;36m"
 export green="\033[1;32m"
 export reset="\033[m"
 
+OG_BRANCH=$(git symbolic-ref --short -q HEAD)
+if [ "$OG_BRANCH" != 'staging' ] || [[ -n $(git status -s) ]]; then # not sure we need
+  echo "${red}Make sure you're on clean staging branch before running release."
+  exit 1
+fi
+
 REPO_NAME=$(git remote get-url origin)
 echo "${cyan}cd to temp repo"
 git clone $REPO_NAME temp_repo
 cd temp_repo
 
 # ensure we're not double tagging
-echo "${cyan}validate branches${reset}"
+echo "${cyan}validate double tag${reset}"
 CURRENT_TAG=$(git tag --points-at HEAD)
-OG_BRANCH=$(git symbolic-ref --short -q HEAD)
 if [ -n "$CURRENT_TAG" ]; then
   echo "${red}Can't tag this commit again. Commit already tagged with ${CURRENT_TAG}."
-  exit 1
-fi
-if [ "$OG_BRANCH" != 'staging' ] || [[ -n $(git status -s) ]]; then # not sure we need
-  echo "${red}Make sure you're on clean staging branch before running release."
   exit 1
 fi
 
@@ -46,7 +47,7 @@ git log --all --color --oneline --decorate --graph -n 20
 
 echo "${cyan}clean temp repo"
 cd ..
-cd rm -rf temp_repo
+cd rm -rf ./temp_repo
 git fetch origin master:master
 git fetch origin staging:staging
 
