@@ -1,22 +1,41 @@
-OG_BRANCH=$(git symbolic-ref --short -q HEAD)
-git stash save --include-untracked # saves local un/stage changes
+export yellow="\033[1;33m"
+export red="\033[1;31m"
+export cyan="\033[1;36m"
+export green="\033[1;32m"
 
-echo 'pull last changes on master and staging'
+
+# ensure we're not double tagging
+CURRENT_TAG=$(git tag --points-at HEAD)
+OG_BRANCH=$(git symbolic-ref --short -q HEAD)
+if [ -n "$CURRENT_TAG" ]; then
+  echo "${red}Can't tag this commit again. Commit already tagged with ${CURRENT_TAG}."
+  exit 1
+fi
+if [ "$OG_BRANCH" = 'staging' ] || [ -n "$(git status -s)" ]; then
+  echo "${red}Make sure you're on clean staging branch before running release."
+  exit 1
+fi
+
+echo "${cyan}cd to temp repo"
+REPO_NAME=$(git remote get-url origin)
+git clone $REPO_NAME temp_repo
+cd temp_repo
+
+echo "${yellow}pull last changes on master and staging"
 git checkout master
 git pull --set-upstream --rebase
 git checkout staging
 git pull --set-upstream --rebase
 
-echo 'tag staging branch'
-LAST_COMMIT_SEMVER=$(git log --format=oneline -n 1 $CIRCLE_SHA1  | sed -n 's/.*\[\(major|minor|patch\)\].*/\1/p')
+echo "${yellow}tag staging branch"
+LAST_COMMIT_SEMVER=$(git log --format=oneline -n 1 $(git rev-parse HEAD)  | sed -n 's/.*\[\(major|minor|patch\)\].*/\1/p')
 npm version ${LAST_COMMIT_SEMVER:=minor} -m "version %s [skip ci]"
 TAGGED_VERSION=$(awk '/version/{gsub(/("|",)/,"",$2);print $2};' package.json)
 
-echo 'rebase master and merge (ff)'
+echo "${yellow}rebase master and merge (ff)"
 git rebase staging master
-git merge master --ff-only
 
-echo 'push changes'
+echo "${yellow}push changes"
 git push origin staging
 git push origin master
 git push origin tag v$TAGGED_VERSION
@@ -24,8 +43,9 @@ git push origin tag v$TAGGED_VERSION
 # debug
 git log --all --color --oneline --decorate --graph -n 15
 
-echo 'restore previous state'
-gir checkout $OG_BRANCH
-git stash pop # restore un/stage changes
+echo "${cyan}clean temp repo"
+cd ..
+cd em -rf temp_repo
 
-echo "Release v${TAGGED_VERSION} successfuly pushed"
+
+echo "${green}Release v${TAGGED_VERSION} successfuly pushed"
