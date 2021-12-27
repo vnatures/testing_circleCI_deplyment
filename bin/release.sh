@@ -2,9 +2,9 @@ git stash save --include-untracked # saves local un/stage changes
 
 echo 'pull last changes on master and staging'
 git checkout master
-git pull -u --rebase
+git pull --set-upstream --rebase
 git checkout staging
-git pull -u --rebase
+git pull --set-upstream --rebase
 
 echo 'tag staging branch'
 LAST_COMMIT_SEMVER=$(git log --format=oneline -n 1 $CIRCLE_SHA1  | sed -n 's/.*\[\(major|minor|patch\)\].*/\1/p')
@@ -16,9 +16,9 @@ git rebase staging master
 git merge master --ff-only
 
 echo 'push changes'
-git push -u origin staging
-git push -u origin master
-git push origin tag $TAGGED_VERSION
+git push origin staging
+git push origin master
+git push origin tag v$TAGGED_VERSION
 
 # debug
 git log --all --color --oneline --decorate --graph -n 15

@@ -24,12 +24,7 @@ jobs:
           name: "Install Dependencies"
       - run:
           command: "npm run build"
-          name: "Build app for ${CIRCLE_TAG}"
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - build
-            - .env
+          name: "Build app for $CIRCLE_TAG"
   release:
     docker:
       - image: cimg/node:17.1.0
