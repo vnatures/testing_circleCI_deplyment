@@ -1,3 +1,4 @@
+OG_BRANCH=$(git symbolic-ref --short -q HEAD)
 git stash save --include-untracked # saves local un/stage changes
 
 echo 'pull last changes on master and staging'
@@ -24,5 +25,7 @@ git push origin tag v$TAGGED_VERSION
 git log --all --color --oneline --decorate --graph -n 15
 
 echo 'restore previous state'
-git checkout -
+gir checkout $OG_BRANCH
 git stash pop # restore un/stage changes
+
+echo "Release v${TAGGED_VERSION} successfuly pushed"
