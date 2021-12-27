@@ -46,7 +46,9 @@ git log --all --color --oneline --decorate --graph -n 15
 
 echo "${cyan}clean temp repo"
 cd ..
-cd em -rf temp_repo
+cd rm -rf temp_repo
+git fetch origin master:master
+git fetch origin staging:staging
 
 
 echo "${green}Release v${TAGGED_VERSION} successfuly pushed"
