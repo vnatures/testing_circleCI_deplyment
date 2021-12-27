@@ -15,6 +15,13 @@ echo "${cyan}cd to temp repo\n"
 git clone $REPO_NAME temp_repo
 cd temp_repo
 
+echo "${yellow}fetch lastest changes on master, staging and tags${reset}\n"
+git fetch --tags
+git checkout master
+git pull --set-upstream --rebase
+git checkout staging
+git pull --set-upstream --rebase
+
 # ensure we're not double tagging
 echo "${cyan}validate double tag${reset}\n"
 CURRENT_TAG=$(git tag --points-at HEAD)
@@ -23,12 +30,6 @@ if [ -n "$CURRENT_TAG" ]; then
   exit 1
 fi
 
-echo "${yellow}pull last changes on master and staging${reset}\n"
-git fetch --tags
-git checkout master
-git pull --set-upstream --rebase
-git checkout staging
-git pull --set-upstream --rebase
 
 echo "${yellow}tag staging branch${reset}\n"
 LAST_COMMIT_SEMVER=$(git log --format=oneline -n 1 $(git rev-parse HEAD)  | sed -n 's/.*\[\(major|minor|patch\)\].*/\1/p')
