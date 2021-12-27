@@ -23,6 +23,7 @@ git clone $REPO_NAME temp_repo
 cd temp_repo
 
 echo "${yellow}pull last changes on master and staging${reset}"
+git fetch --tags
 git checkout master
 git pull --set-upstream --rebase
 git checkout staging
