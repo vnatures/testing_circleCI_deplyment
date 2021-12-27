@@ -5,9 +5,16 @@ export green="\033[1;32m"
 export reset="\033[m"
 
 
-# ensure we're not double tagging
+echo "${cyan}cd to temp repo"
+git clone $REPO_NAME temp_repo
+cd temp_repo
+
 CURRENT_TAG=$(git tag --points-at HEAD)
 OG_BRANCH=$(git symbolic-ref --short -q HEAD)
+REPO_NAME=$(git remote get-url origin)
+
+
+# ensure we're not double tagging
 if [ -n "$CURRENT_TAG" ]; then
   echo "${red}Can't tag this commit again. Commit already tagged with ${CURRENT_TAG}."
   exit 1
@@ -16,11 +23,6 @@ if [ "$OG_BRANCH" != 'staging' ] || [[ -n $(git status -s) ]]; then # not sure w
   echo "${red}Make sure you're on clean staging branch before running release."
   exit 1
 fi
-
-echo "${cyan}cd to temp repo"
-REPO_NAME=$(git remote get-url origin)
-git clone $REPO_NAME temp_repo
-cd temp_repo
 
 echo "${yellow}pull last changes on master and staging${reset}"
 git fetch --tags
