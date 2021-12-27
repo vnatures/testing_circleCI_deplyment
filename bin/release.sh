@@ -5,24 +5,24 @@ export green="\033[1;32m"
 export reset="\033[m"
 
 REPO_NAME=$(git remote get-url origin)
+OG_DIR=$(pwd)
+TEMP_RELEASE_DIR=$(pwd)
 echo "\n${cyan}cd to temp repo${reset}"
-git clone $REPO_NAME temp_repo
-cd temp_repo
+git clone $REPO_NAME $TEMP_RELEASE_DIR
+cd $TEMP_RELEASE_DIR
 
 echo "\n${yellow}fetch lastest changes on master, staging and tags${reset}"
 git fetch --tags
 git checkout master
-git pull --set-upstream --rebase origin master
 git checkout staging
-git pull --set-upstream --rebase origin staging
 
 # ensure we're not double tagging
 echo "\n${cyan}validate double tag${reset}"
 CURRENT_TAG=$(git tag --points-at HEAD)
 if [ -n "$CURRENT_TAG" ]; then
   echo "${red}Can't tag this commit again. Commit already tagged with ${CURRENT_TAG}."
-  cd ..
-  rm -rf temp_repo
+  cd $OG_DIR
+  rm -rf $TEMP_RELEASE_DIR
   exit 1
 fi
 
@@ -42,8 +42,8 @@ git push origin tag v$TAGGED_VERSION
 git log --all --color --oneline --decorate --graph -n 20
 
 echo "\n${cyan}clean temp repo${reset}"
-cd ..
-rm -rf temp_repo
+cd $OG_DIR
+rm -rf $TEMP_RELEASE_DIR
 git fetch origin master:master || git pull --rebase origin master
 git fetch origin staging:staging || git pull --rebase origin staging
 
