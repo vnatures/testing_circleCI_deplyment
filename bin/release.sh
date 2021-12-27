@@ -44,7 +44,7 @@ git log --all --color --oneline --decorate --graph -n 20
 echo "\n${cyan}clean temp repo${reset}"
 cd ..
 rm -rf temp_repo
-git fetch origin master:master
+git fetch origin master:master || git pull --rebase origin master
 git fetch origin staging:staging || git pull --rebase origin staging
 
 
