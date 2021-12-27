@@ -5,8 +5,8 @@ export green="\033[1;32m"
 export reset="\033[m"
 
 OG_BRANCH=$(git symbolic-ref --short -q HEAD)
-if [ "$OG_BRANCH" != 'staging' ] || [[ -n $(git status -s) ]]; then # not sure we need
-  echo "${red}Make sure you're on clean staging branch before running release."
+if [ "$OG_BRANCH" != 'staging' ] || [[ -n $(git status -s) ]] || [[ -n $(git log origin/staging..staging) ]]; then
+  echo "${red}Make sure you're on synced clean staging branch before running release."
   exit 1
 fi
 
