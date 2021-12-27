@@ -47,5 +47,4 @@ rm -rf temp_repo
 git fetch origin master:master || git pull --rebase origin master
 git fetch origin staging:staging || git pull --rebase origin staging
 
-
 echo "\n${green}Release v${TAGGED_VERSION} successfuly pushed"
