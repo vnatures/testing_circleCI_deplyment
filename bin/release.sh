@@ -11,10 +11,7 @@ if [ -n "$CURRENT_TAG" ]; then
   echo "${red}Can't tag this commit again. Commit already tagged with ${CURRENT_TAG}."
   exit 1
 fi
-if [ -n "$(git status -s)" ]; then
-  echo 'what'
-fi
-if [ "$OG_BRANCH" = 'staging' ] || [ -n "$(git status -s)" ]; then # not sure we need
+if [ "$OG_BRANCH" = 'staging' ] || [ "$(git status -s)" != '' ]; then # not sure we need
   echo "${red}Make sure you're on clean staging branch before running release."
   exit 1
 fi
