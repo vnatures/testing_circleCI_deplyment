@@ -11,10 +11,10 @@ cd temp_repo
 
 echo "\n${yellow}fetch lastest changes on master, staging and tags${reset}"
 git fetch --tags
-git checkout master
-git pull --set-upstream --rebase
-git checkout staging
-git pull --set-upstream --rebase
+git checkout --set-upstream master
+git pull --rebase
+git checkout --set-upstream staging
+git pull --rebase
 
 # ensure we're not double tagging
 echo "\n${cyan}validate double tag${reset}"
