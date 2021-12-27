@@ -6,7 +6,7 @@ export reset="\033[m"
 
 REPO_NAME=$(git remote get-url origin)
 OG_DIR=$(pwd)
-TEMP_RELEASE_DIR=$(pwd)
+TEMP_RELEASE_DIR="tmp/release_for_pyramid"
 echo "\n${cyan}cd to temp repo${reset}"
 git clone $REPO_NAME $TEMP_RELEASE_DIR
 cd $TEMP_RELEASE_DIR
