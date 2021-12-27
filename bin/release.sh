@@ -5,7 +5,7 @@ export green="\033[1;32m"
 export reset="\033[m"
 
 REPO_NAME=$(git remote get-url origin)
-echo "\n${cyan}cd to temp repo"
+echo "\n${cyan}cd to temp repo${reset}"
 git clone $REPO_NAME temp_repo
 cd temp_repo
 
@@ -48,4 +48,4 @@ git fetch origin master:master
 git fetch origin staging:staging
 
 
-echo "${green}Release v${TAGGED_VERSION} successfuly pushed"
+echo "\n${green}Release v${TAGGED_VERSION} successfuly pushed"
