@@ -44,7 +44,5 @@ git log --all --color --oneline --decorate --graph -n 20
 echo "\n${cyan}clean temp repo${reset}"
 cd $OG_DIR
 rm -rf $TEMP_RELEASE_DIR
-git fetch origin master:master || git pull --rebase origin master
-git fetch origin staging:staging || git pull --rebase origin staging
 
 echo "\n${green}Release v${TAGGED_VERSION} successfuly pushed"
