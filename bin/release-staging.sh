@@ -29,7 +29,7 @@ fi
 echo "\n${yellow}tag staging branch${reset}"
 LAST_COMMIT_SEMVER=$(git log --format=oneline -n 1 $(git rev-parse HEAD)  | sed -n 's/.*\[\(major|minor|patch\)\].*/\1/p')
 npm version ${LAST_COMMIT_SEMVER:=minor} -m "version %s [skip ci]"
-TAGGED_VERSION=$(awk '/version/{gsub(/("|",)/,"",$2);print $2};' package.json)
+TAGGED_VERSION=$(node -pe "require('./package.json').version")
 
 echo "\n${yellow}rebase master and merge (ff)${reset}"
 git rebase staging master
@@ -39,7 +39,7 @@ git push origin staging
 git push origin master
 git push origin tag v$TAGGED_VERSION
 
-git log --all --color --oneline --decorate --graph -n 20
+git --no-pager log --all --color --oneline --decorate --graph -n 20
 
 echo "\n${cyan}clean temp repo${reset}"
 cd $OG_DIR
