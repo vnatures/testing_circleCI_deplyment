@@ -33,17 +33,11 @@ jobs:
             - package.json
   sourcemaps:
     docker:
-      - image: circleci/node:12.18.4-browsers
-
-    parameters:
-      workspace-root:
-        type: string
-        description: local files you want to pass from the build stage
-  
+      - image: circleci/node:12.18.4-browsers  
     steps:
       - checkout
       - attach_workspace:
-        at: << parameters.workspace-root >>
+          at: ~/project
 
   release:
     docker:
@@ -101,7 +95,6 @@ workflows:
             - production
       - sourcemaps:
           name: sourcemaps-test
-          workspace-root: ~/project
           post-steps:
             - run:
                 name: 'Install cmake'
