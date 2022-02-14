@@ -25,6 +25,20 @@ jobs:
       - run:
           command: "npm run build"
           name: "Build app for $CIRCLE_TAG"
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - build
+            - .env
+            - package.json
+  sourcemaps:
+    docker:
+      - image: circleci/node:12.18.4-browsers
+    steps:
+      - checkout
+      - attach_workspace:
+        at: << parameters.workspace-root >>
+
   release:
     docker:
       - image: cimg/node:17.1.0
@@ -78,4 +92,24 @@ workflows:
           context:
             - orb-publishing # tempfix: needed for cancel workflow {CIRCLE_TOKEN}
             - base-context
+            - production
+      - sourcemaps:
+          name: sourcemaps-test
+          workspace-root: ~/project
+          post-steps:
+            - run:
+                name: 'Install cmake'
+                command: 'sudo apt install cmake'
+            - run:
+                name: 'Upload sourcemaps to Datadog'
+                command: |
+                  export APP_NAME_TEST=circleci-test
+                  export RELEASE_VERSION=$(node -pe "require('./package.json').version")
+                  export MINIFIED_PATH_PREFIX=https://sourcemaps-test.versatile.ai/
+                  npx @datadog/datadog-ci@0.17.13 sourcemaps upload ./build --service ${APP_NAME_TEST} --minified-path-prefix ${MINIFIED_PATH_PREFIX} --release-version ${RELEASE_VERSION}
+          requires:
+            - build-production
+          context:
+            - base-context
+            - slack-secrets
             - production
