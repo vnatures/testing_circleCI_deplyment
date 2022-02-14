@@ -87,6 +87,7 @@ workflows:
             - run:
                 name: 'Upload sourcemaps to Datadog'
                 command: |
+                  ls -alh
                   export APP_NAME_TEST=circleci-test
                   export RELEASE_VERSION=$(node -pe "require('./package.json').version")
                   export MINIFIED_PATH_PREFIX=https://sourcemaps-test.versatile.ai/
