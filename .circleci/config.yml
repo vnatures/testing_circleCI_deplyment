@@ -75,7 +75,6 @@ workflows:
     jobs:
       - build:
           name: build-production
-          <<: *production-filtering
           pre-steps:
             - run:
                 name: Add github.com to known hosts
