@@ -38,7 +38,6 @@ jobs:
     docker:
       - image: circleci/node:12.18.4-browsers  
     steps:
-      - checkout
       - attach_workspace:
           at: ~/project
 
