@@ -34,6 +34,12 @@ jobs:
   sourcemaps:
     docker:
       - image: circleci/node:12.18.4-browsers
+
+    parameters:
+      workspace-root:
+        type: string
+        description: local files you want to pass from the build stage
+  
     steps:
       - checkout
       - attach_workspace:
