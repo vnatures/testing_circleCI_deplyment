@@ -26,7 +26,7 @@ jobs:
           command: "npm run build"
           name: "Build app for $CIRCLE_TAG"
       - run:
-          command: "ls -alh"
+          command: "pwd"
           name: "Test"
       - persist_to_workspace:
           root: ~/project
